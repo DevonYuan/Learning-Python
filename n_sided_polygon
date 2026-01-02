@@ -1,0 +1,72 @@
+import turtle
+import math
+myPen = turtle.Turtle()
+myScreen = turtle.Screen()
+
+myScreen.setup(1000, 1000) 
+
+def drawAxis(inputTurtle):
+    # x and y axis through the centre 
+    inputTurtle.penup()
+    inputTurtle.goto(0,320)
+    inputTurtle.pendown()
+    inputTurtle.goto(0,-320)
+    inputTurtle.penup()
+    inputTurtle.goto(-320, 0)
+    inputTurtle.pendown()
+    inputTurtle.goto(320, 0)
+
+def drawPolygon(inputTurtle, sides, size):
+    inputTurtle.penup()
+    separatingAngle = 360 / sides
+    inputTurtle.goto(0, 0)
+    inputTurtle.pendown()
+
+    for i in range (sides):
+        inputTurtle.forward(size)
+        inputTurtle.left(separatingAngle)
+
+def drawCentredPolygon(inputTurtle, sides, sideLength):
+    # Method: Inscribe the shape into a circle with its centre at the origin 
+    # We use the size and make the size be the radius of the circle 
+    # The angle between the lines connecting each point toward the centre is 360 / number of sides 
+    # Basically, you draw the points that act as the corners. 
+    # I drew the shape by referring to the process of solving complex number questions that involve the Roots of Unity 
+
+    inputTurtle.penup()
+    separatingAngle = math.radians(360 / sides)
+    radius = sideLength / (math. sqrt(2 * (1 - math.cos(separatingAngle))))
+    inputTurtle.goto(radius * math.cos(separatingAngle), radius * math.sin(separatingAngle))
+    inputTurtle.pendown()
+
+    for i in range (1, sides):
+        inputTurtle.goto(radius * math.cos(separatingAngle + 2 * i * math.pi / sides), radius * math.sin(separatingAngle + 2 * i * math.pi / sides))
+    
+    inputTurtle.goto(radius * math.cos(separatingAngle), radius * math.sin(separatingAngle))
+
+def drawCustomCentredPolygon(inputTurtle, sides, sideLength, customX, customY):
+    # Method: Inscribe the shape into a circle with its centre at the origin 
+    # We use the size and make the size be the radius of the circle 
+    # The angle between the lines connecting each point toward the centre is 360 / number of sides 
+    # Basically, you draw the points that act as the corners. 
+    # I drew the shape by referring to the process of solving complex number questions that involve the Roots of Unity 
+    # The side length must be converted to the radius using the cosine law. 
+    
+    # This time, you get to choose where you want the centre of the polygon to be. 
+
+    inputTurtle.penup()
+    separatingAngle = math.radians(360 / sides)
+    radius = sideLength / (math. sqrt(2 * (1 - math.cos(separatingAngle))))
+    inputTurtle.goto(customX + radius * math.cos(separatingAngle), customY + radius * math.sin(separatingAngle))
+    inputTurtle.pendown()
+
+    for i in range (1, sides):
+        inputTurtle.goto(customX + radius * math.cos(separatingAngle + 2 * i * math.pi / sides), customY + radius * math.sin(separatingAngle + 2 * i * math.pi / sides))
+    
+    inputTurtle.goto(customX + radius * math.cos(separatingAngle), customY + radius * math.sin(separatingAngle))
+
+drawAxis(myPen)
+drawCentredPolygon(myPen, 3, 40)
+drawCustomCentredPolygon(myPen, 9, 50, 100, 200)
+
+turtle.mainloop()
