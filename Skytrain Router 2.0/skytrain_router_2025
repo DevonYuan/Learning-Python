@@ -1,0 +1,234 @@
+class skytrainLine:
+    def __init__ (self, lineName):
+        self.getLineName = lineName
+        self.getListOfStations = []
+    
+    def addStation (self, stationName):
+        self.getListOfStations.append(stationName)
+
+    def getStationList(self):
+        return self.getListOfStations
+
+    def lineName (self):
+        return self.getLineName
+
+    def printNames (self):
+        for i in range (len(self.getListOfStations)):
+            print("|"+self.getListOfStations[i]+".", end = "")
+
+def checkAndIdentifyLine (name):
+    global lines
+    statuses = []
+    myLines = ""
+
+    for i in range (len(lines)):
+        if (((name + "\n") in lines[i].getStationList()) or 
+        ((name + " *(ME)\n") in lines[i].getStationList()) or
+        ((name + " *(EC)\n") in lines[i].getStationList()) or 
+        ((name + " *(C)\n") in lines[i].getStationList())):
+            statuses.append(True)
+            myLines += lines[i].lineName() + ", "
+        
+        else:
+            statuses.append(False)
+    
+    if True in statuses:
+        return myLines 
+
+    else: 
+        return "Please ensure that station names are entered properly"
+    
+def countInstances (myString, character):
+    counter = 0
+
+    for i in range (len(myString)):
+        if myString[i] == str(character):
+            counter += 1
+
+    return counter 
+
+def routeOnSameLine(firstStation, secondStation):
+    global lines
+    residingLine = ""
+    
+    if "Millenium Line" in checkAndIdentifyLine(firstStation.replace("*", "")) and "Expo Line" in checkAndIdentifyLine(firstStation.replace("*", "")):
+        if "Millenium Line" in checkAndIdentifyLine(secondStation.replace("*", "")) and "Expo Line" in checkAndIdentifyLine(secondStation.replace("*", "")):
+            print("Transfer to the Millenium Line")
+            currentLinePos1 = milleniumLine.getStationList().index(firstStation.replace("*", " *(ME)\n"))
+            currentLinePos2 = milleniumLine.getStationList().index(secondStation.replace("*", " *(ME)\n"))
+            print("Ride " + str(abs(currentLinePos2 - currentLinePos1)) + " stop(s) to " + secondStation.replace("*", ""))
+
+    if countInstances(checkAndIdentifyLine(secondStation.replace("*", "")), ",") == 2:
+        residingLine = checkAndIdentifyLine(firstStation).replace(",", "")
+    
+    else:
+        residingLine = checkAndIdentifyLine(secondStation).replace(", ", "")
+    
+    for i in range (len(lines)):
+        if lines[i].lineName() == residingLine and ("*" not in firstStation) and ("*" not in secondStation):
+            currentLine = lines[i]
+            currentLinePos1 = currentLine.getStationList().index(firstStation + "\n")
+            currentLinePos2 = currentLine.getStationList().index(secondStation + "\n")
+            print("Ride " + str(abs(currentLinePos2 - currentLinePos1)) + " stop(s) to " + secondStation)
+        
+        elif lines[i].lineName() == residingLine and ("*" in firstStation) and ("*" not in secondStation):
+            firstStation = firstStation.replace("*", " *(ME)\n")
+            for j in range (len(lines)):
+                if lines[j].lineName() == residingLine:
+                    currentLine = lines[j]
+                    currentLinePos1 = currentLine.getStationList().index(firstStation)
+                    currentLinePos2 = currentLine.getStationList().index(secondStation + "\n")
+                    print("Ride " + str(abs(currentLinePos2 - currentLinePos1)) + " stop(s) to " + secondStation)
+        
+        elif lines[i].lineName() == residingLine and ("*" in secondStation) and ("*" not in firstStation):
+            secondStation = secondStation.replace("*", "* (ME)\n")
+            for j in range (len(lines)):
+                if lines[j].lineName() == residingLine:
+                    currentLine = lines[j]
+                    currentLinePos1 = currentLine.getStationList().index(firstStation + "\n")
+                    currentLinePos2 = currentLine.getStationList().index(secondStation)
+                    print("Ride " + str(abs(currentLinePos2 - currentLinePos1)) + " stops to " + secondStation)
+
+def routeToSameLine (initialStation, finalLineName, finalStation):
+    global lines
+
+    initialLineName = checkAndIdentifyLine(initialStation)
+    initialLineName = initialLineName[:-2]
+    criticalPoints = []
+    for i in range (len(lines)):
+        if lines[i].lineName() == initialLineName:
+            initialLineStations = lines[i].getStationList()
+            for j in range (len(initialLineStations)):
+                if "*" in initialLineStations[j]:
+                    criticalPoints.append(initialLineStations[j])
+
+    codes = []
+    for i in range (len(criticalPoints)):
+        initialBracketIndex = criticalPoints[i].index("(")
+        finalBracketIndex = criticalPoints[i].index(")")
+        codes.append(criticalPoints[i][(initialBracketIndex + 1) : finalBracketIndex])
+    
+    finalLineName = finalLineName[:-2]
+    
+    if initialLineName == "Millenium Line" and finalLineName == "Expo Line":
+
+        distances = [milleniumLine.getStationList().index(initialStation + "\n") - milleniumLine.getStationList().index("Commercial Broadway *(ME)\n"),
+                      milleniumLine.getStationList().index(initialStation + "\n") - milleniumLine.getStationList().index("Production Way University *(ME)\n"),
+                        milleniumLine.getStationList().index(initialStation + "\n") - milleniumLine.getStationList().index("Lougheed Town Centre *(ME)\n")]
+    
+        absoluteDistances = []
+        for i in range (len(distances)):
+            absoluteDistances.append(abs(distances[i]))
+
+        shortestAbsoluteDistance = min(absoluteDistances)
+        shortestDistanceIndex = absoluteDistances.index(shortestAbsoluteDistance)
+        shortestDistance = distances[shortestDistanceIndex]
+        nextStationName = ""
+        if shortestDistance > 0:
+            nextStationName = milleniumLine.getStationList()[milleniumLine.getStationList().index(initialStation + "\n") - shortestDistance]
+        
+        else:
+            nextStationName = milleniumLine.getStationList()[milleniumLine.getStationList().index(initialStation + "\n") + abs(shortestDistance)]
+        
+        print("Ride " + str(shortestAbsoluteDistance) + " stop(s) to " + nextStationName.replace(" *(ME)", ""), end = "")
+        print("Transfer to the " + finalLineName)
+        routeOnSameLine(nextStationName.replace(" *(ME)\n", "*"), finalStation)
+
+milleniumLine = skytrainLine("Millenium Line")
+expoLine = skytrainLine("Expo Line")
+canadaLine = skytrainLine("Canada Line")
+lines = [milleniumLine, expoLine, canadaLine]
+
+milleniumLineText = open("milleniumLine.txt", "r")
+expoLineText = open("expoLine.txt", "r")
+canadaLineText = open("canadaLine.txt", "r")
+txtFiles = [milleniumLineText, expoLineText, canadaLineText]
+
+milleniumLineStations = milleniumLineText.readlines()
+expoLineStations = expoLineText.readlines()
+canadaLineStations = canadaLineText.readlines()
+lineStations = [milleniumLineStations, expoLineStations, canadaLineStations]
+
+for i in range (len(lineStations)):
+    for j in range (len(lineStations[i])):
+        lines[i].addStation(lineStations[i][j])
+
+inUse = True
+
+while inUse:
+    command = str(input("What would you like to do? "))
+    
+    if command == "terminate":
+        inUse = False
+    
+    elif command == "Find directions":
+        station1 = str(input("Which station are you currently at? "))
+        line1 = checkAndIdentifyLine(station1)
+
+        station2 = str(input("Which station would you like the directions to? "))
+        line2 = checkAndIdentifyLine(station2)
+        
+        if countInstances(line1, ",") == 1 and countInstances(line2, ",") == 1:
+            if line1 == line2:
+                routeOnSameLine(station1, station2)
+                 
+            else:
+                if line1 == "Canada Line, " and line2 == "Expo Line, ":
+                    print("Ride " + str(2 + canadaLine.getStationList().index(station1 + "\n")) + " station(s) to Waterfront")
+
+                    if station2 != "Waterfront":
+                        routeOnSameLine("Waterfront", station2)
+
+                elif line1 == "Canada Line, " and "Millenium Line" in line2:
+                    print("Ride " + str(2 + canadaLine.getStationList().index(station1 + "\n")) + " station(s) to Waterfront")
+                    print("Ride 4 station(s) to Commercial Broadway")
+
+                    if station2 != "Commercial Broadway":
+                        routeOnSameLine("Commercial Broadway*", station2)
+
+                elif "Expo Line" in line1 and "Canada Line" in line2:
+                    print("Ride " + str(1 + expoLine.getStationList().index(station1 + "\n")) + " stop(s) to Waterfront")
+                    print("Transfer to the Canada Line")
+                    print("Ride " + str(2 + canadaLine.getStationList().index(station2 + "\n")) + " stop(s) to " + station2)
+
+                elif "Millenium Line" in line1 and "Canada Line" in line2:
+                    print("Ride " + str(abs(milleniumLine.getStationList().index("Commercial Broadway *(ME)\n")) - milleniumLine.getStationList().index(station1 + "\n")) + " stop(s) to Commercial Broadway")
+                    print("Transfer to the Expo Line")
+                    print("Ride 5 stop(s) to Waterfront")
+                    print("Transfer to the Canada Line")
+                    print("Ride " + str(2 + abs(canadaLine.getStationList().index(station2 + "\n"))) + " stop(s) to " + station2)
+                
+                else:
+                    routeToSameLine(station1, line2, station2)
+
+        if countInstances(line1, ",") == 2 and countInstances(line2, ",") == 1:
+            if ("Commercial Broadway" == station1  or "Lougheed Town Centre" == station1 or "Production Way University" == station1):
+                if ("Millenium" in line2 or "Expo" in line2):
+                    print("Transfer to the " + line2.replace(", ", ""))
+                    routeOnSameLine(station1 + "*", station2)
+                
+                if "Canada" in line2:
+                    print("Ride " + str(abs(milleniumLine.getStationList().index(station1 + " *(ME)\n"))) + " station(s) to Waterfront")
+                    print("Transfer to the Canada Line")
+                    print("Ride " + str(2 + abs(canadaLine.getStationList().index(station2 + "\n"))) + " station(s) to " + station2)
+
+        if countInstances(line1, ",") == 1 and countInstances(line2, ",") == 2:
+            if ("Commercial Broadway" == station2  or "Lougheed Town Centre" == station2 or "Production Way University" == station2):
+                if ("Millenium" in line1 or "Expo" in line1):
+                    print("Transfer to the " + line1.replace(", ", ""))
+                    routeOnSameLine(station1, station2 + "*")
+                
+                if "Canada" in line1:
+                    print("Ride " + str(2 + canadaLine.getStationList().index(station1 + "\n")) + " station(s) to Waterfront")
+                    print("Ride " + str(milleniumLine.getStationList().index(station2 + " *(ME)\n")) + " station(s) to " + station2)
+
+        if countInstances(line1, ",") == 2 and countInstances(line2, ",") == 2:
+            if ("Commercial Broadway" == station1 or "Lougheed Town Centre" == station1 or "Production Way University" == station1):
+                if ("Commercial Broadway" == station2 or "Lougheed Town Centre" == station2 or "Production Way University" == station2):
+                    if("Millenium" in line1 and "Expo" in line1):
+                        if ("Millenium" in line2 and "Expo" in line2):
+                            routeOnSameLine(station1 + "*", station2 + "*")
+        
+        print("")
+
+print("Thank you for using this program!")
