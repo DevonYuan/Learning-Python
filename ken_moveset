@@ -12,6 +12,8 @@ L = Heavy Punch
 U = Light Kick 
 I = Mediun Kick 
 O = Heavy Kick 
+
+This program detects motion inputs such as quarter circles and Z-shapes. 
 """
 
 from pynput import keyboard
@@ -200,4 +202,5 @@ def onRelease (inputKey):
 
 myListener = keyboard.Listener(on_press = onPress, on_release = onRelease)
 myListener.start()
+
 myListener.join()
