@@ -1,0 +1,150 @@
+class Cell:
+    def __init__(self, letterCoordinate, numberCoordinate, content):
+        self.getXCoor = letterCoordinate
+        self.getYCoor = numberCoordinate
+        self.getString = str(content)
+    
+    def returnInformation (self):
+        classInformation = "Letter: " + str(self.getXCoor) + "| "
+        classInformation += "Number: " + str(self.getYCoor) + "| "
+        classInformation += "Content: " + self.getString
+        return classInformation
+
+    def __str__(self):
+        return self.getString
+    
+    def displayAsCell (self):
+        displayText = self.getString
+        
+        if len(displayText) > 10: 
+            for i in range (7):
+                print(displayText[i], end = "")
+            
+            print("...", end = "")
+            
+        else:
+            
+            if len(displayText) % 2 == 0:
+
+                for i in range (5 - int(len(displayText) / 2)):
+                    print(" ", end = "")
+                
+                print(displayText, end = "")
+
+                for i in range (5 - int(len(displayText) / 2)):
+                    print(" ", end = "")
+            
+            else:
+                for i in range (int((9 - len(displayText)) / 2)):
+                    print(" ", end = "")
+                
+                print(displayText, end = "")
+
+                for i in range (int((11 - len(displayText)) / 2)):
+                    print(" ", end = "")
+
+        print("|", end = "")
+    
+    def updateCell(self, newText):
+        self.getString = str(newText)
+    
+    def xCoor (self):
+        return self.getXCoor
+    
+    def yCoor (self):
+        return self.getYCoor
+
+def gatherCellCoordinates():
+    global selectedLetter
+    global selectedNumber
+
+    selectedLetter = str(input("What is the letter of the cell? "))
+    selectedNumber = int(input("What is the number of the cell? "))
+
+inUse = True 
+letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+cells = []
+
+for i in range (10):
+    for k in range (10):
+        cells.append(Cell(letters[k], i + 1, ""))
+
+selectedLetter = None
+selectedNumber = None
+inputInformation = None
+
+while inUse:
+    """
+    Display the spreadsheet: 10 x 10 grid, 100 cells 
+
+    The list of cells is made such that you have each row listed left to right 
+    The rows go top down 
+
+    For cells 10, 20, 30, 40, 50, . . . start a new line 
+    For cells 1, 11, 21, 31, 41, . . . start with a "|"
+
+    Python uses 0 based indexing, so cell 1 is actually going to be index 0 in python 
+    We account for this in our logic
+    To check if our number is one of the 10 special numbers above 
+
+    i + 1 would be the index, if the first cell has a number 1. 
+    For example, at the end of the first line the 10th cell has the index 9. 
+    Its actuall cell number would be 9 + 1 = 10
+
+    If i + 1 is divisible by 10, then it i + 1 would be 10, 20, 30, 40, 50 . . .
+    If i is divisible by 10, then the actual cell number would be:
+    11, 21, 31, 41 . . . 
+    """
+    print("|          |", end = "")
+    for i in range (10):
+        print (f"    {letters[i]}     |", end = "")
+    print("")
+
+    for i in range (100):
+    
+        if i % 10 == 0 and i != 90:
+            print(f"|    {str(round((i / 10) + 1))}     |", end = "")
+    
+        if i == 90:
+            print(f"|    {str(round((i / 10) + 1))}    |", end = "")
+
+        cells[i].displayAsCell()
+
+        if (i + 1) % 10 == 0:
+            print ("")
+    
+    print("")
+    command = str(input("What would you like to do? ")).lower()
+
+    if command == "add information":
+        gatherCellCoordinates()
+        inputInformation = input("Please enter the text: ")
+        
+        for i in range(100):
+            if cells[i].xCoor() == selectedLetter and cells[i].yCoor() == selectedNumber:
+                cells[i].updateCell(inputInformation)
+    
+    elif command == "clear cell":
+        gatherCellCoordinates()
+        
+        for i in range(100):
+            if cells[i].xCoor() == selectedLetter and cells[i].yCoor() == selectedNumber:
+                cells[i].updateCell("")
+    
+    elif command == "collect information from cell":
+        gatherCellCoordinates()
+
+        for i in range(100):
+            if cells[i].xCoor() == selectedLetter and cells[i].yCoor() == selectedNumber:
+                print(cells[i].returnInformation())
+    
+    elif command == "reset":
+        for i in range(100):
+            cells[i].updateCell("")
+    
+    elif command == "finish":
+        inUse = False
+
+    print("")
+
+print("Thank you for using the Excel spreadsheet!")
