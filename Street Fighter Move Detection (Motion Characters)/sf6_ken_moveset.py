@@ -157,10 +157,6 @@ def onRelease (inputKey):
     Dragon Punch: D -> S -> S + D + Punch 
     Hurricane Kick: S -> S + A -> A + Kick 
 
-    Those were the classic moves. A couple new ones were added in this game:
-    Spinning Roundhouse Kick: Fireball (Motion) + Kick
-    Dragonlash Kick: Dragon Punch (Motion) + Kick
-
     """
 
     """
@@ -169,31 +165,31 @@ def onRelease (inputKey):
     """
     if str(inputKey) in ["'u'", "'i'", "'o'"]:
         """
-        Detects the Hurricane Kick
+        Detects: 214K
         """
 
-        detectQuarterCircleAttack("s", "a", "u", "i", "o", "Hurricane Kick")
+        detectQuarterCircleAttack("s", "a", "u", "i", "o", "214K")
 
         """
-        Detects the Crazy Kicks
+        Detects 236K
         """
-        detectQuarterCircleAttack("s", "d", "u", "i", "o", "Crazy Kick")
+        detectQuarterCircleAttack("s", "d", "u", "i", "o", "236K")
 
         """
-        Detects the Dragonlash Kick
+        Detects 623K
         """
-        detectZShapeAttacks("d", "s", "u", "i", "o", "Dragonlash Kick")
+        detectZShapeAttacks("d", "s", "u", "i", "o", "623K")
     
     if str(inputKey) in ["'j'", "'k'", "'l'"]:
         """
-        Detects the Fireball
+        Detects 236P
         """
-        detectQuarterCircleAttack("s", "d", "j", "k", "l", "Fireball")
+        detectQuarterCircleAttack("s", "d", "j", "k", "l", "236P")
 
         """
-        Detects the Dragon Punch
+        Detects 623P
         """
-        detectZShapeAttacks("d", "s", "j", "k", "l", "Dragon Punch")
+        detectZShapeAttacks("d", "s", "j", "k", "l", "623P")
 
     myKeys.remove(inputKey)
     manageLength()
